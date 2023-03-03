@@ -3,4 +3,4 @@
 # shellcheck shell=bash
 set -eu
 
-nix run .#containers.copyTo -- "${IMAGE_URI:-docker://emattiza/waters:latest}"
+nix run .#containers.copyTo -- "${IMAGE_URI:-docker://ghcr.io/emattiza/waters:latest}"
