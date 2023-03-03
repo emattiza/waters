@@ -1,0 +1,9 @@
+tasks:
+  - init: nix build .
+    command: direnv reload
+    name: Nix Shell
+
+vscode:
+  extensions:
+    - mkhl.direnv
+    - usernamehw.errorlens
