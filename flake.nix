@@ -132,6 +132,7 @@
         nativeBuildInputs = with pkgs; [
           alejandra
           nil
+          rust-analyzer
           cargo
           rustc
         ];
