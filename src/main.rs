@@ -6,7 +6,7 @@ use std::{
 };
 
 use clap::{arg, ArgMatches, Command};
-use git2::{Reference, Repository, Worktree, WorktreeAddOptions};
+use git2::{Reference, Repository, Worktree};
 
 fn build_cli() -> Command {
     let cmd = Command::new("wt")
@@ -44,7 +44,6 @@ impl Error for WorktreesError {
 }
 
 struct MyWorktree<'a> {
-    tree: Worktree,
     reference: Reference<'a>,
     path: &'a str,
     name: &'a str,
@@ -63,8 +62,6 @@ impl<'a> MyWorktree<'a> {
         )?;
         Ok(())
     }
-
-    fn add(&self) {}
 }
 
 fn get_worktrees() -> Result<(Repository, Vec<String>), WorktreesError> {
