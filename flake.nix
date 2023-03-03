@@ -130,6 +130,8 @@
 
         # Extra inputs can be added here
         nativeBuildInputs = with pkgs; [
+          alejandra
+          nil
           cargo
           rustc
         ];

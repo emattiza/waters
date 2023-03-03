@@ -1,0 +1,5 @@
+{
+    "nix.serverPath": "nil",
+    "nix.formatterPath": "alejandra",
+    "nix.enableLanguageServer": true
+}
