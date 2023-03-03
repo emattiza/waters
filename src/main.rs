@@ -2,16 +2,22 @@ use std::{
     error::Error,
     fmt::{Debug, Display},
     io::{self, Write},
+    path::Path,
 };
 
-use clap::{ArgMatches, Command};
-use git2::{Reference, Repository, Worktree};
+use clap::{arg, ArgMatches, Command};
+use git2::{Reference, Repository, Worktree, WorktreeAddOptions};
 
 fn build_cli() -> Command {
     let cmd = Command::new("wt")
         .arg_required_else_help(true)
         .subcommand(Command::new("list").about("List worktrees"))
-        .subcommand(Command::new("add").about("Add a worktree"));
+        .subcommand(
+            Command::new("add")
+                .about("Add a worktree")
+                .arg(arg!(head: <HEAD>))
+                .arg(arg!(path: [PATH])),
+        );
     return cmd;
 }
 
@@ -38,6 +44,7 @@ impl Error for WorktreesError {
 }
 
 struct MyWorktree<'a> {
+    tree: Worktree,
     reference: Reference<'a>,
     path: &'a str,
     name: &'a str,
@@ -56,6 +63,8 @@ impl<'a> MyWorktree<'a> {
         )?;
         Ok(())
     }
+
+    fn add(&self) {}
 }
 
 fn get_worktrees() -> Result<(Repository, Vec<String>), WorktreesError> {
@@ -104,15 +113,29 @@ fn print_worktrees() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-fn add_worktree() -> () {
-    todo!()
+fn add_worktree(path: Option<&str>, head: Option<&String>) -> Result<(), Box<dyn Error>> {
+    let cwd = ".";
+    println!("{:#?}\n{:#?}", head, path);
+    if let Ok(repo) = Repository::discover(cwd) {
+        repo.worktree(
+            head.ok_or(WorktreesError::ApplicationError)?,
+            Path::new(path.ok_or(WorktreesError::ApplicationError)?),
+            None,
+        )?;
+    }
+    Ok(())
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
     let matches: ArgMatches = build_cli().get_matches();
     match matches.subcommand() {
         Some(("list", _)) => print_worktrees(),
-        Some(("add", _)) => Ok(()),
+        Some(("add", sub_matches)) => {
+            let path = sub_matches.get_one::<String>("path");
+            let head = sub_matches.get_one::<String>("head");
+            add_worktree(path.map(|i| &**i), head)?;
+            Ok(())
+        }
         _ => Ok(()),
     }
 }
