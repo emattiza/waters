@@ -8,4 +8,11 @@ mod tests {
             .failure()
             .stderr(predicates::str::contains("-h, --help"));
     }
+
+    #[test]
+    fn it_lists_worktrees() {
+        let mut cmd = Command::cargo_bin("waters").unwrap();
+        let assert = cmd.arg("list").assert();
+        assert.success();
+    }
 }
