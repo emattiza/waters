@@ -1,0 +1,22 @@
+name: "Test"
+on:
+  pull_request:
+  push:
+jobs:
+  builds:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: cachix/install-nix-action@v17
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+      - name: Log into ghcr
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          registry: "ghcr.io"
+          username: "${{ github.actor }}"
+          password: "${{ secrets.GITHUB_TOKEN }}"
+      - run: nix build .
+      - run: scripts/push_image.sh
+        env:
+          IMAGE_URI: "docker://ghcr.io/emattiza/waters:latest"

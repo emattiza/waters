@@ -10,6 +10,7 @@
     };
 
     flake-utils.url = "github:numtide/flake-utils";
+    nix2container.url = "github:nlewo/nix2container";
 
     advisory-db = {
       url = "github:rustsec/advisory-db";
@@ -23,12 +24,16 @@
     crane,
     flake-utils,
     advisory-db,
+    nix2container,
     ...
   }:
     flake-utils.lib.eachDefaultSystem (system: let
       pkgs = import nixpkgs {
         inherit system;
       };
+
+      nix2containerPkgs = nix2container.packages.${system};
+
 
       inherit (pkgs) lib;
 
@@ -116,7 +121,21 @@
             });
         };
 
-      packages.default = my-crate;
+      packages = {
+        default = my-crate;
+        containers = nix2containerPkgs.nix2container.buildImage {
+          name = "waters";
+          tag = "latest";
+          copyToRoot = pkgs.buildEnv {
+            name = "waters-root";
+            paths = [my-crate];
+            pathsToLink = ["/bin"];
+          };
+          config = {
+            Cmd = ["${my-crate}/bin/waters"];
+          };
+        };
+      };
 
       apps.default = flake-utils.lib.mkApp {
         drv = my-crate;
