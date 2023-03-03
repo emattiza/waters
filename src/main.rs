@@ -2,7 +2,6 @@ use std::{
     error::Error,
     fmt::{Debug, Display},
     io::{self, Write},
-    path::Path,
 };
 
 use clap::{ArgMatches, Command};
@@ -23,7 +22,7 @@ enum WorktreesError {
 }
 
 impl Display for WorktreesError {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, _f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         todo!()
     }
 }
